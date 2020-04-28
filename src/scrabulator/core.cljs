@@ -11,25 +11,29 @@
 (defonce app-state (atom {:dictionary   nil
                           :letters      ""
                           :regex        ""
-                          :last-message ""
+                          :last-message "Loading app..."
                           :ready?       false
                           :matches      []}))
 
+(defn seconds-since [js-date]
+  (/ (- (js/Date.) js-date) 1000))
+
 (def init (do
-            (println "loading the sowpods.txt dictionary.")
-            (GET "/sowpods.txt" {:handler       (fn [response]
-                                                  (let [r (->> response
-                                                               js->clj
-                                                               string/split-lines
-                                                               (mapv (fn [word]
-                                                                       (let [f (frequencies word)]
-                                                                         {:word        word
-                                                                          :letter-freq f
-                                                                          :base-score  (scrabulator.scoring/letter-freq->score f)}))))]
-                                                    (swap! app-state assoc :dictionary r :ready? true)
-                                                    (println "loaded the dictionary successfully with scores.")))
-                                 :error-handler (fn [{:keys [status status-text] :as response}]
-                                                  (println "failed to load sowpods.txt.  Status" status ":" status-text))})))
+            (swap! app-state assoc :last-message "loading the dictionary of accepted words.")
+            (let [start-time (js/Date.)]
+              (GET "/sowpods.txt" {:handler       (fn [response]
+                                                    (let [r (->> response
+                                                                 js->clj
+                                                                 string/split-lines
+                                                                 (mapv (fn [word]
+                                                                         (let [f (frequencies word)]
+                                                                           {:word        word
+                                                                            :letter-freq f
+                                                                            :base-score  (scrabulator.scoring/letter-freq->score f)}))))
+                                                          msg      (str "dictionary loaded in " (seconds-since start-time) " seconds.")]
+                                                      (swap! app-state assoc :dictionary r :ready? true :last-message msg)))
+                                   :error-handler (fn [{:keys [status status-text] :as response}]
+                                                    (swap! app-state assoc :last-message (str "failed to load the dictionary.  Status" status ":" status-text)))}))))
 
 (defn get-app-element []
   (gdom/getElement "app"))
@@ -55,11 +59,11 @@
             :value "calculate!"
             :disabled (-> @app-state :ready? not)
             :on-click #(do
-                         (println (js/Date.) "calculating matches")
-                         (let [{:keys [dictionary letters regex]} @app-state
+                         (swap! app-state assoc :last-message "calculating matches...") ; doesn't show because the event handler has the thread of control...
+                         (let [start-time (js/Date.)
+                               {:keys [dictionary letters regex]} @app-state
                                results (scrabulator.text-processing/matching-words dictionary letters regex)]
-                           (swap! app-state assoc :matches results))
-                         (println (js/Date.) "done all matches"))}]])
+                           (swap! app-state assoc :matches results :last-message (str "found " (count results) " words in " (seconds-since start-time) " seconds."))))}]])
 
 (defn matched-word-container [{:keys [word score] :as word-map}]
   ^{:key (str "mwc-" word)} [:li {:key (str "mwc-" word)} (str word " (" score ")")])
@@ -75,10 +79,13 @@
   [:div
    [:h3 "Welcome to the scrabulator!"]
    [:div
+    [:div (:last-message @app-state)]
     [letters-container]
     [regex-container]
     [calc-container]
-    [results-container]]])
+    [results-container]]
+   [:hr]
+   "wobin's tinker toy.  you can find the cljs source on " [:a {:href "https://github.com/sirwobin/scrabulator.core"} "github"]])
 
 (defn mount [el]
   (reagent/render-component [app-container] el))
