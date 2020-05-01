@@ -1,2 +1,21 @@
 /* some style */
 
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.appcontainer {
+    margin: 20px;
+    border: 1px;
+    border-radius: 2px;
+    max-width: 700px;
+}
+
+.appcontainer div {
+    margin-bottom: 10px;
+}
+
+.calc-button {
+    margin-left: 60px;
+    min-width:80px;
+}
