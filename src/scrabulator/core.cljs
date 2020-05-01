@@ -59,11 +59,11 @@
                     "pattern help"]]
    (when (:display-regex-help? @app-state)
      [:div.help-text
-      [:span.pure-u-1-12 "s..t"]     [:span.pure-u-11-12 "any word containing an S, then 2 characters and then a T"]
-      [:span.pure-u-1-12 "^st"]      [:span.pure-u-11-12 "any word starting with ST"]
-      [:span.pure-u-1-12 ".w."]      [:span.pure-u-11-12 "any word contain a w with at least 1 character before and after"]
-      [:span.pure-u-1-12 "st$"]      [:span.pure-u-11-12 "any word ending ST"]
-      [:span.pure-u-1-12 "^w...st$"] [:span.pure-u-11-12 "any word starting with W, followed by exactly 3 letters and ending ST"]])])
+      [:span.pure-u-1-6 "s..t"]     [:span.pure-u-5-6 "any word containing an S, then 2 characters and then a T"]
+      [:span.pure-u-1-6 "^st"]      [:span.pure-u-5-6 "any word starting with ST"]
+      [:span.pure-u-1-6 ".w."]      [:span.pure-u-5-6 "any word contain a w with at least 1 character before and after"]
+      [:span.pure-u-1-6 "st$"]      [:span.pure-u-5-6 "any word ending ST"]
+      [:span.pure-u-1-6 "^w...st$"] [:span.pure-u-5-6 "any word starting with W, followed by exactly 3 letters and ending ST"]])])
 
 (defn calc-container []
   [:div
