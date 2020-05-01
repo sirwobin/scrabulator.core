@@ -19,3 +19,8 @@ body {
     margin-left: 60px;
     min-width:80px;
 }
+
+.help-text {
+    font-size: 80%;
+    margin-left: 5px;
+}

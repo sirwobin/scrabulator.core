@@ -8,12 +8,13 @@
     [scrabulator.scoring]))
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:dictionary   nil
-                          :letters      ""
-                          :regex        ""
-                          :last-message "Loading app..."
-                          :ready?       false
-                          :matches      []}))
+(defonce app-state (atom {:dictionary          nil
+                          :letters             ""
+                          :regex               ""
+                          :last-message        "Loading app..."
+                          :ready?              false
+                          :display-regex-help? false
+                          :matches             []}))
 
 (defn seconds-since [js-date]
   (/ (- (js/Date.) js-date) 1000))
@@ -44,14 +45,25 @@
             :value (:letters @app-state)
             :name "letters"
             :placeholder "what tiles do you have?"
-            :on-change #(swap! app-state assoc :letters (-> % .-target .-value))}]])
+            :on-change #(swap! app-state assoc :letters (-> % .-target .-value))}]
+   [:div.help-text "use underscore for blank tiles."]])
 
 (defn regex-container []
   [:div
    [:input {:type "text"
             :name "regex"
             :placeholder "optional pattern?"
-            :on-change #(swap! app-state assoc :regex (-> % .-target .-value))}]])
+            :on-change #(swap! app-state assoc :regex (-> % .-target .-value))}]
+   [:div.help-text [:a {:href "#"
+                        :on-click #(swap! app-state update :display-regex-help? not)}
+                    "pattern help"]]
+   (when (:display-regex-help? @app-state)
+     [:div.help-text
+      [:span.pure-u-1-12 "s..t"]     [:span.pure-u-11-12 "any word containing an S, then 2 characters and then a T"]
+      [:span.pure-u-1-12 "^st"]      [:span.pure-u-11-12 "any word starting with ST"]
+      [:span.pure-u-1-12 ".w."]      [:span.pure-u-11-12 "any word contain a w with at least 1 character before and after"]
+      [:span.pure-u-1-12 "st$"]      [:span.pure-u-11-12 "any word ending ST"]
+      [:span.pure-u-1-12 "^w...st$"] [:span.pure-u-11-12 "any word starting with W, followed by exactly 3 letters and ending ST"]])])
 
 (defn calc-container []
   [:div
