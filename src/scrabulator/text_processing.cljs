@@ -32,7 +32,8 @@
     (reduce (fn [results {:keys [word letter-freq base-score] :as word-map}]
               (let [{:keys [missing-count missing-letters]} (letters-missing avail-letter-freq letter-freq)]
                 (if (and (<= missing-count blank-count) (matcher word))
-                  (->> (assoc word-map :missing-letters missing-letters :score (- base-score (scrabulator.scoring/letter-freq->score missing-letters)))
+                  (->> (assoc word-map :missing-letters missing-letters
+                                       :score           (- base-score (scrabulator.scoring/letter-freq->score missing-letters)))
                        (conj results))
                   results)))
             []

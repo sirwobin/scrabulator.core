@@ -76,7 +76,8 @@
                   (let [start-time (js/Date.)
                         {:keys [dictionary letters regex]} @app-state
                         results (scrabulator.text-processing/matching-words dictionary letters regex)]
-                    (swap! app-state assoc :matches results :last-message (str "found " (count results) " words in " (seconds-since start-time) " seconds."))))}]])
+                    (swap! app-state assoc :matches      results
+                                           :last-message (str "found " (count results) " words in " (seconds-since start-time) " seconds."))))}]])
 
 (defn matched-word-container [{:keys [word score] :as word-map}]
   [:div.pure-u-1-4 word])

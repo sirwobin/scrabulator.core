@@ -13,7 +13,7 @@
                                (interleave letters (repeat score))))
                         flatten
                         (partition 2)
-                        (reduce (fn [r [k v]] (assoc r k v)) {})))
+                        (into {})))
 
 (defn letter-freq->score [freq]
   (reduce (fn [score [letter letter-freq]]
